@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="../images/Logo.jpg" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-storage.js"></script>
+    <script defer src="script.js"></script>
+    <title>MEMO / ACCOUNT SETUP</title>
+</head>
+<style>
+    @media (pointer:none), (pointer:coarse) {
+        body {
+            background:rgb(10, 10, 10);
+            margin:0;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow:hidden;
+            opacity: 0;
+        }
+
+        #number {
+            width:calc(100% - 50px);
+            height:50px;
+            font-size:35px;
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+            text-align: center;
+            background-color: transparent !important;
+            border: none;
+            color:rgb(212, 212, 212);
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        /* Target the input element in autofill state */
+        input:-webkit-autofill,
+        input:-moz-autofill,
+        input:-ms-autofill,
+        input:autofill {
+            /* Set the desired background color */
+            background-color: #b51010;  /* Replace with your desired background color */
+        }
+
+        #button {
+            width:calc(100vw - 50px);
+            padding:15px 0px;
+            font-size: 20px;
+            font-weight: 700;
+            color:black;
+            border-radius: 15px;
+            border:none;
+            margin-top: 15px;
+            background:white;
+            text-transform: uppercase;
+            position:fixed;
+            bottom:50px;
+            left:50%;
+            transform: translate(-50%);
+            /* opacity: 1; */
+            transition: .5s;
+        }
+
+        button:disabled,
+        button[disabled]{
+            opacity:0.6;
+        }
+        
+        input:focus {
+            outline:none;
+            background:transparent;
+        }
+
+        @keyframes bouncing-loader {
+            to {
+                opacity: 0.1;
+                transform: translate3d(0, -16px, 0);
+            }
+        }
+
+        .bouncing-loader {
+            display: flex;
+            justify-content: center;
+            position:absolute;
+            margin-top: 5px;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+            transition-delay: .5s;
+            transition: .5s;
+            opacity: 0;
+        }
+
+        .bouncing-loader > div {
+            width: 10px;
+            height: 10px;
+            margin: 0px 3px;
+            background: #000000;
+            border-radius: 50%;
+            animation: bouncing-loader 0.6s infinite alternate;
+        }
+
+        .bouncing-loader > div:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .bouncing-loader > div:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        #edit-Button {
+            width:125px;
+            height:125px;
+            overflow: hidden;
+            background:rgba(50, 50, 50, 0.5);
+            backdrop-filter: blur(1rem);
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+            border-radius: 100%;
+            border: none;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #profile-Img-Mini {
+            width:100%;
+            height:100%;
+            object-fit: cover;
+            object-position: center;
+            position:absolute;
+            opacity: 0;
+            transition: .5s;
+        }
+
+        #Images {
+            width:100%;
+            height:100%;
+            font-size: 100px;
+            position:absolute;
+            top:0px;
+            left:0px;
+            opacity:0;
+        }
+
+        .camera-Icon {
+            width:50px;
+            height:50px;
+            fill:white;
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+            opacity: 0.5;
+        }
+
+        #background-Img-Container {
+            width:100vw;
+            height:calc(100vh - 150px);
+            overflow: hidden;
+            position:relative;
+            transition: .5s;
+        }
+
+        #background-Img {
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:blur(2.5rem) brightness(45%);
+            opacity: 0;
+            transition: .5s;
+        }
+        
+        #fadeT {
+            width:100vw;
+            height:50%;
+            position:absolute;
+            top:0px;
+            background:linear-gradient(to bottom, rgb(10, 10, 10), transparent);
+        }
+
+        #fadeB {
+            width:100vw;
+            height:50%;
+            position:absolute;
+            bottom:0px;
+            background:linear-gradient(to top, rgb(10, 10, 10), transparent);
+        }
+
+        #fadeR {
+            width:55%;
+            height:100%;
+            position:absolute;
+            right:0px;
+            top:0px;
+            background:linear-gradient(to left, rgb(10, 10, 10), transparent);
+        }
+
+        #fadeL {
+            width:55%;
+            height:100%;
+            position:absolute;
+            left:0px;
+            top:0px;
+            background:linear-gradient(to right, rgb(10, 10, 10), transparent);
+        }
+    }
+
+    @media(pointer:default) {
+        body {
+            display: none;
+        }
+    }
+</style>
+<body onload="showBody()">
+    <div id="background-Img-Container">
+        
+        <img id="background-Img">
+        <div id="fadeB"></div>
+        <div id="fadeT"></div>
+        
+        <div id="fadeL"></div>
+        <div id="fadeR"></div>
+    </div>
+    <div id="code">
+        <input type="text" id="number" placeholder="username" maxlength="13" onkeydown="checkLetterCount()" onkeyup="checkLetterCount()">
+        <button id="edit-Button"><img src="" id="profile-Img-Mini"><svg class="camera-Icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" viewBox="0 0 487 487" xml:space="preserve"><g><g><path d="M308.1,277.95c0,35.7-28.9,64.6-64.6,64.6s-64.6-28.9-64.6-64.6s28.9-64.6,64.6-64.6S308.1,242.25,308.1,277.95z     M440.3,116.05c25.8,0,46.7,20.9,46.7,46.7v122.4v103.8c0,27.5-22.3,49.8-49.8,49.8H49.8c-27.5,0-49.8-22.3-49.8-49.8v-103.9    v-122.3l0,0c0-25.8,20.9-46.7,46.7-46.7h93.4l4.4-18.6c6.7-28.8,32.4-49.2,62-49.2h74.1c29.6,0,55.3,20.4,62,49.2l4.3,18.6H440.3z     M97.4,183.45c0-12.9-10.5-23.4-23.4-23.4c-13,0-23.5,10.5-23.5,23.4s10.5,23.4,23.4,23.4C86.9,206.95,97.4,196.45,97.4,183.45z     M358.7,277.95c0-63.6-51.6-115.2-115.2-115.2s-115.2,51.6-115.2,115.2s51.6,115.2,115.2,115.2S358.7,341.55,358.7,277.95z"/></g></g></svg><input type="file" name="file" id="Images" title="Please upload image(Jepg, Png)" accept="image/*"></button>
+    </div>
+    <div id="password-View-Eye">
+        EYE
+    </div>
+    <button id="button" disabled onclick="setUsername()">
+        <div id="button-Text" style="transition:.5s;">Enter</div>
+        <div class="bouncing-loader">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </button>
+
+    <script>
+        var name;
+        var username;
+        const setUsername = function() {
+            document.getElementById("button").setAttribute("disabled", "")
+            username = document.getElementById("number").value
+            document.getElementById("button").style.opacity = ".6"
+            localStorage.setItem("username", username)
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = "0"
+            setTimeout(function() {
+                // document.getElementById("number").style.display = "none"
+                document.getElementById("number").value = ""
+                document.getElementById("number").setAttribute("placeholder", "first name")
+                document.getElementById("button-Text").innerText = "Enter"
+                document.getElementById("button").removeAttribute("onclick")
+                document.getElementById("button").setAttribute("onclick", "setName()")
+                // document.getElementById("edit-Button").style.display = "flex"
+                setTimeout(function() {
+                    document.querySelector("body").style.opacity = "1"
+                    document.querySelector("body").style.transition = "0"
+                }, 200)
+            }, 500)
+        }
+
+        const setName = function() {
+            document.getElementById("button").setAttribute("disabled", "")
+            name = document.getElementById("number").value
+            document.getElementById("button").style.opacity = ".6"
+            localStorage.setItem("name", name)
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = "0"
+            setTimeout(function() {
+                document.getElementById("number").value = ""
+                document.getElementById("number").setAttribute("placeholder", "password")
+                document.getElementById("password-View-Eye").style.display = "flex"
+                document.getElementById("number").setAttribute("type", "password")
+                document.getElementById("button-Text").innerText = "Enter"
+                document.getElementById("button").removeAttribute("onclick")
+                document.getElementById("button").setAttribute("onclick", "setPassword()")
+                setTimeout(function() {
+                    document.querySelector("body").style.opacity = "1"
+                    document.querySelector("body").style.transition = "0"
+                }, 200)
+            }, 500)
+        }
+
+        const setPassword = async function() {
+            document.getElementById("button").setAttribute("disabled", "")
+            password = document.getElementById("number").value
+            // hashedPassword = await hashPassword(password);
+            hashedPassword = password;
+
+            document.getElementById("button").style.opacity = ".6"
+            localStorage.setItem("password", password)
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = "0"
+            setTimeout(function() {
+                document.getElementById("password-View-Eye").style.display = "none"
+                document.getElementById("number").style.display = "none"
+                document.getElementById("button-Text").innerText = "Use"
+                document.getElementById("button").removeAttribute("onclick")
+                document.getElementById("button").setAttribute("onclick", "UploadProfile()")
+                document.getElementById("edit-Button").style.display = "flex"
+                setTimeout(function() {
+                    document.querySelector("body").style.opacity = "1"
+                    document.querySelector("body").style.transition = "0"
+                }, 200)
+            }, 500)
+        }
+        
+        function showBody() {
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = "1"
+            setTimeout(function() {
+                document.querySelector("body").style.transition = "0s"
+            }, 500)
+        }
+
+        // Function to convert a string to an ArrayBuffer
+        function stringToArrayBuffer(str) {
+            const encoder = new TextEncoder();
+            return encoder.encode(str);
+        }
+
+        // Function to hash a password
+        async function hashPassword(password) {
+            const passwordBuffer = stringToArrayBuffer(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', passwordBuffer);
+            const hashedPassword = Array.from(new Uint8Array(hashBuffer))
+                .map(byte => byte.toString(16).padStart(2, '0'))
+                .join('');
+            return hashedPassword;
+        }
+
+        // Function to compare two hashed passwords
+        async function comparePasswords(password, hashedPassword) {
+            const inputHashedPassword = await hashPassword(password);
+            return inputHashedPassword === hashedPassword;
+        }
+
+        // localStorage.clear()
+    </script>
+</body>
+</html>

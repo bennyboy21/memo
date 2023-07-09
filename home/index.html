@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="../images/Logo.jpg" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-storage.js"></script>
+    <script defer src="script.js"></script>
+    <title>MEMO / HOME</title>
+</head>
+
+<style>
+    
+    @media (pointer:none), (pointer:coarse) {
+        :root {
+            --Image-height:500px;
+        }
+
+        body {
+            background:rgb(10, 10, 10);
+            padding:0;
+            margin:0px;
+            font-family: Arial, Helvetica, sans-serif;
+            /* height:5000px; */
+            width:100vw;
+            opacity: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #main-Top-Fade {
+            width:100vw;
+            height:15vh;
+            background:linear-gradient(to bottom, rgb(10, 10, 10), transparent);
+            position:fixed;
+            top:0px;
+            left:0px;
+            user-select: none;
+            z-index:13;
+        }
+        
+        #new-Memo-Refresh {
+            width:120px;
+            height:25px;
+            padding:10px 15px;
+            background:rgba(35, 35, 35, 0.5);
+            position:absolute;
+            top:50px;
+            border-radius:100px;
+            font-weight: 900;
+            left:50%;
+            transform:translate(-50%);
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            color:white;
+            gap: 5px;
+            -webkit-backdrop-filter: blur(1rem);
+            word-break: none;
+            word-wrap: none;
+            backdrop-filter: blur(1rem);
+            opacity: 0;
+            transition: .5s;
+        }
+
+        #new-Memo-Text {
+            word-wrap: none;
+            width:fit-content;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .refresh-Icon {
+            width:16px;
+            height:16px;
+            fill:white;
+        }
+
+        #profile-Top-Img-button {
+            --div-size:40px;
+            width:var(--div-size);
+            height:var(--div-size);
+            overflow: hidden;
+            position:fixed;
+            border-radius: 100%;
+            top:12.5px;
+            right:12.5px;
+            z-index: 10000;
+            border:none;
+            background:rgb(25, 25, 25);
+        }
+
+        #profile-Top-Img {
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+            width:100%;
+            height:100%;
+            object-fit: cover;
+        }
+
+        #logo {
+            font-size: 30px;
+            font-weight: 900;
+        }
+
+        #img-Container {
+            width:100vw;
+            height:var(--Image-height);
+            position:fixed;
+            top:0px;
+            overflow: hidden;
+            user-select: none;
+            background:rgb(25, 25, 25);
+        }
+
+        #img {
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            object-position: center;
+            user-select: none;
+            /* filter:saturate(0%); */
+        }
+
+        #fade {
+            width:100vw;
+            height:50%;
+            background:linear-gradient(to top, rgb(10, 10, 10) 10%, transparent);
+            position:absolute;
+            top:calc(var(--Image-height) - 50%);
+            user-select: none;
+            z-index: 2;
+        }
+
+        #fade2 {
+            width:100vw;
+            height:50%;
+            background:linear-gradient(to top, rgb(10, 10, 10) 25%, transparent);
+            position:absolute;
+            top:calc(var(--Image-height) - 50%);
+            user-select: none;
+            z-index: 2;
+        }
+
+        #fade3 {
+            width:100vw;
+            height:50%;
+            background:linear-gradient(to bottom, rgb(10, 10, 10), transparent);
+            position:fixed;
+            top:0px;
+            user-select: none;
+            z-index:1;
+        }
+
+        #fade4 {
+            width:100vw;
+            height:50%;
+            background:linear-gradient(to bottom, rgba(10, 10, 10, 0.438), transparent);
+            position:fixed;
+            top:0px;
+            user-select: none;
+            z-index:1;
+        }
+        
+        #no-Memos-Container {
+            width:100vw;
+            height:350px;
+            color:white;
+            display:flex;
+            justify-items: center;
+            align-items: center;
+            overflow-x: hidden;
+            position:relative;
+            margin-top: -50px;
+        }
+
+        #no-Memos-Img-1 {
+            width:100px;
+            filter:blur(2rem);
+            position:absolute;
+            right:50px;
+            top:125px;
+            transform: rotate(25deg);
+        }
+
+        #no-Memos-Img-2 {
+            width:75px;
+            filter:blur(2rem) brightness(50%);
+            position:absolute;
+            left:50px;
+            top:150px;
+            transform: rotate(-25deg);
+        }
+
+        #no-Memos-Img-3 {
+            width:85px;
+            filter:blur(1.5rem) brightness(70%);
+            position:absolute;
+            left:50%;
+            top:35px;
+            transform: rotate(-25deg) translate(-50%);
+        }
+
+        #no-Memos-Text {
+            width:100vw;
+            height:100%;
+            background:rgba(10, 10, 10, 0.5);
+            display:flex;
+            justify-content: center;
+            align-items:center;
+            font-weight: 800;
+            color:rgba(200, 200, 200, 0.8);
+            text-transform: capitalize;
+        }
+
+        #posts-Container {
+            width:100vw;
+            /* height:5000px; */
+            background:rgb(10, 10, 10);
+            position:absolute;
+            top:calc(var(--Image-height) + 50px);
+            position:absolute;
+            margin-top: -50px;
+            padding-top:95px;
+        }
+
+        #page-Info {
+            height:fit-content;
+            position:absolute;
+            left:50%;
+            transform:translate(-50%);
+            color:white;
+            bottom:12.5px;
+            width:calc(100vw - 25px);
+        }
+
+        #name {
+            height:fit-content;
+            font-size:45px;
+            font-weight:1000;
+            text-transform: capitalize;
+        }
+
+        #memories-Text {
+            color:rgb(150, 150, 150);
+            font-weight:900;
+            margin-top:5px;
+            text-transform: uppercase;
+        }
+
+        #bottom-Info {
+            width:100vw;
+            height:100px;
+            padding-bottom:75px;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            font-weight:900;
+            color:rgb(70, 70, 70);
+            flex-direction: column;
+        }
+
+        #fade-Top-Create-Join-Memo-Section {
+            width:100vw;
+            height:50%;
+            background:linear-gradient(to top, rgb(10, 10, 10) 25%, transparent);
+            position:absolute;
+            bottom:20px;
+        }
+
+        #create-Join-Memo-Container {
+            width:100vw;
+            height:250px;
+            transform:rotate(180deg);
+            margin-top: -140px;
+            margin-bottom: 100px;
+            position:relative;
+        }
+
+        #create-Join-Memo-Card {
+            width:calc(100vw - 25px);
+            height:175px;
+            background:rgba(30, 30, 30, 0.5);
+            -webkit-backdrop-filter: blur(2rem);
+            position:absolute;
+            border-radius: 15px;
+            margin-top: -12.5px;
+            top:50%;
+            left:50%;
+            font-size:20px;
+            transform:translate(-50%, -50%) rotate(180deg);
+            color:rgba(255, 255, 255, 0.25);
+            display:flex;
+            flex-direction: column;
+            justify-content:center;
+            align-items:center;
+            gap:5px;
+            font-weight: 900;
+        }
+
+        #join-Icon {
+            --div-size:70px;
+            width:var(--div-size);
+            height:var(--div-size);
+            fill:rgba(255, 255, 255, 0.25);
+        }
+
+        #group-Joined-Container {
+            width:calc(100vw - 25px);
+            /* margin-top: -105px; */
+            margin-top: -90px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 50px;
+            padding-top:75px;
+            position:relative;
+        }
+
+        .group-Container {
+            width:calc(100vw - 25px);
+            height:350px;
+            border-radius: 15px;
+            position:relative;
+            margin-bottom: 25px;
+        }
+
+        .group-Img-Container {
+            width:calc(100vw - 25px);
+            height:350px;
+            border-radius: 15px;
+            overflow: hidden;
+            position:absolute;
+        }
+
+        .group-Img {
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            object-position: center;
+            filter:brightness(50%);
+        }
+
+        .bottom-Fade {
+            border-bottom-right-radius: 14px;
+            border-bottom-left-radius: 14px;
+            width:100%;
+            height:100%;
+            background:linear-gradient(to top, rgb(10, 10, 10), transparent);
+            position:absolute;
+            bottom:0px;
+        }
+        
+        .group-Info {
+            font-weight: 900;
+            position:absolute;
+            bottom:12.5px;
+            left:12.5px;
+        }
+
+        .group-name {
+            font-size: 20px;
+            color:white;
+        }
+
+        .member-Count {
+            color:rgb(115, 115, 115);
+        }
+
+        #join-Memo-Button {
+            width:calc(100vw - 25px);
+            padding:16px 0px;
+            font-size: 20px;
+            font-weight: 700;
+            color:black;
+            border-radius: 15px;
+            border:none;
+            margin-top: 15px;
+            background:white;
+            text-transform: uppercase;
+            position:absolute;
+            top:-15px;
+            left:50%;
+            transform: translate(-50%);
+        }
+
+        /* #join-Icon {
+            --div-size:25px;
+            width:var(--div-size);
+            height:var(--div-size);
+            fill:rgba(0, 0, 0);
+        } */
+    }
+</style>
+
+<body>
+    <div id="main-Top-Fade">       
+        <button onclick="openProfile()" id="profile-Top-Img-button">
+            <img id="profile-Top-Img" src="">
+        </button>
+        <div id="logo" style="color:white;position:absolute;top:15px;left:50%;transform:translate(-50%);">MEMO</div>
+    </div>
+    <div id="img-Container">
+        <img src="" id="img">
+    </div>
+
+    <div id="fade"></div>
+    <div id="fade2">
+        <div id="page-Info">
+            <div id="name">Home</div>
+            <div id="memories-Text">All Memos</div>
+        </div>
+    </div>
+    <div id="fade3"></div>
+    <div id="fade4"></div>
+    <div id="posts-Container">
+        <!-- <div id="create-Join-Memo-Container">
+            <img id="no-Memos-Img-1" src="../images/group.jpg">
+            <img id="no-Memos-Img-2" src="../images/One.jpg">
+            <img id="no-Memos-Img-3" src="../images/Three.jpg">
+            <div id="fade-Top-Create-Join-Memo-Section"></div>
+            <div id="create-Join-Memo-Card" onclick="openJoinGroup()">
+                <svg id="join-Icon" xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24">
+                    <rect id="view-box" width="24" height="24" fill="none"/>
+                    <path id="Shape" d="M5.75,17.5a.75.75,0,0,1,0-1.5h8.8A1.363,1.363,0,0,0,16,14.75v-12A1.363,1.363,0,0,0,14.55,1.5H5.75a.75.75,0,0,1,0-1.5h8.8A2.853,2.853,0,0,1,17.5,2.75v12A2.853,2.853,0,0,1,14.55,17.5ZM7.22,13.28a.75.75,0,0,1,0-1.061L9.939,9.5H.75A.75.75,0,0,1,.75,8H9.94L7.22,5.28A.75.75,0,0,1,8.28,4.22l4,4,.013.013.005.006.007.008.007.008,0,.005.008.009,0,0,.008.01,0,0,.008.011,0,0,.008.011,0,0,.008.011,0,0,.007.011,0,.005.006.01,0,.007,0,.008,0,.009,0,.006.006.011,0,0,.008.015h0a.751.751,0,0,1-.157.878L8.28,13.28a.75.75,0,0,1-1.06,0Z" transform="translate(3.25 3.25)"/>
+                </svg>
+                Create/Join Group
+            </div>
+        </div> -->
+
+        <div id="group-Joined-Container">
+            <button id="join-Memo-Button"onclick="openJoinGroup()">
+                Join Memo
+                <!-- <svg id="join-Icon" xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24">
+                    <rect id="view-box" width="24" height="24" fill="none"/>
+                    <path id="Shape" d="M5.75,17.5a.75.75,0,0,1,0-1.5h8.8A1.363,1.363,0,0,0,16,14.75v-12A1.363,1.363,0,0,0,14.55,1.5H5.75a.75.75,0,0,1,0-1.5h8.8A2.853,2.853,0,0,1,17.5,2.75v12A2.853,2.853,0,0,1,14.55,17.5ZM7.22,13.28a.75.75,0,0,1,0-1.061L9.939,9.5H.75A.75.75,0,0,1,.75,8H9.94L7.22,5.28A.75.75,0,0,1,8.28,4.22l4,4,.013.013.005.006.007.008.007.008,0,.005.008.009,0,0,.008.01,0,0,.008.011,0,0,.008.011,0,0,.008.011,0,0,.007.011,0,.005.006.01,0,.007,0,.008,0,.009,0,.006.006.011,0,0,.008.015h0a.751.751,0,0,1-.157.878L8.28,13.28a.75.75,0,0,1-1.06,0Z" transform="translate(3.25 3.25)"/>
+                </svg> -->
+            </button>
+        </div>
+        <div id="no-Memos-Container">
+            <img id="no-Memos-Img-1" src="../images/toronto_img.png">
+            <img id="no-Memos-Img-2" src="../images/cody_img.png">
+            <img id="no-Memos-Img-3" src="../images/Five.jpg">
+            <div id="no-Memos-Text">You Aren't Apart of a MEMO Yet.</div>
+        </div>
+        <div id="bottom-Info">
+            <span id="logo">MEMO</span>
+            Created by Benjamin Burnell
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <script> 
+        function openJoinGroup() {
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = "0"
+            setTimeout(function() {
+                document.querySelector("body").style.transition = "0s"
+                window.location = '../code'
+            }, 500)
+        }
+
+        function showBody() {
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = "1"
+            setTimeout(function() {
+                document.querySelector("body").style.transition = "0s"
+            }, 500)
+        }
+
+        var r = document.querySelector(':root');
+    
+        document.addEventListener("scroll", function() {
+            if(window.scrollY <= 500) {
+                console.log()
+                var calc = (100 - ((window.scrollY / 500) * 25)) + "%"
+                document.getElementById("img").style.height = calc
+                // r.style.setProperty('--Image-height', calc);
+            } else if(window.scrollY >= 500) {
+                document.getElementById("img").style.height = "0%"
+                // var calc = "0%"
+                // r.style.setProperty('--Image-height', calc);
+            }else if(window.scrollY >= 450) {
+                
+                document.getElementById("main-Top-Fade").style.opacity = 1
+            } else if(window.scrollY <= 0) {
+                var calc = "100%"
+                // r.style.setProperty('--Image-height', calc);
+                // document.getElementById("img").style.height = "100%"
+            }
+            
+            // if(window.scrollY >= 500) {
+            //     // document.getElementById("add-Smaller-Button").style.display = "flex"
+            //     document.getElementById("add-Smaller-Button").style.opacity = "1"
+            //     // setTimeout(function() {
+            //     //     document.getElementById("add-Smaller-Button").style.opacity = "1"
+            //     // }, 250)
+            // } else {
+            //     document.getElementById("add-Smaller-Button").style.opacity = "0"
+            //     setTimeout(function() {
+            //         // document.getElementById("add-Smaller-Button").style.display = "none"
+            //     }, 500)
+            // }
+        })
+
+        function showBody() {
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = "1"
+            setTimeout(function() {
+                document.querySelector("body").style.transition = "0s"
+            }, 500)
+        }
+    </script>
+</body>
+</html>

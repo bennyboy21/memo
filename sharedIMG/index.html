@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    @media (pointer:none), (pointer:coarse) {
+        :root {
+            --Image-height:500px;
+        }
+
+        body {
+            background:rgb(10, 10, 10);
+            padding:0;
+            width:100vw;
+            font-family: Arial, Helvetica, sans-serif;
+            height:fit-content;
+            margin:0;
+            user-select: none;
+            overflow: hidden;
+            -webkit-user-select: none;
+            /* opacity: 0; */
+        }
+
+        #img-Container {
+            overflow: hidden;
+            width:100vw;
+            height:fit-content;
+            max-height: 550px;
+            position:absolute;
+            top:50%;
+            transform:translate(0, -50%);
+        }
+
+        #fade1 {
+            width:100vw;
+            height:50%;
+            position:absolute;
+            top:0px;
+            background:linear-gradient(to bottom, rgb(10, 10, 10), transparent);
+        }
+
+        #fade2 {
+            width:100vw;
+            height:50%;
+            position:absolute;
+            bottom:0px;
+            background:linear-gradient(to top, rgb(10, 10, 10), transparent);
+        }
+
+        #img {
+            width:100vw;
+            object-fit:cover;
+            object-position: center;
+            min-height:400px;
+            max-height:600px;
+        }
+
+        #logo {
+            font-size:35px;
+            font-weight: 900;
+        }
+
+        #button {
+            width:calc(100vw - 50px);
+            padding:15px 0px;
+            font-size: 20px;
+            font-weight: 700;
+            color:black;
+            border-radius: 15px;
+            border:none;
+            margin-top: 15px;
+            background:white;
+            text-transform: uppercase;
+            position:fixed;
+            bottom:50px;
+            left:50%;
+            transform: translate(-50%);
+        }
+    }
+</style>
+
+<body>
+    <div id="logo" style="color:white;position:absolute;top:15px;left:50%;transform:translate(-50%);">MEMO</div>
+        
+    <div id="img-Container">   
+        <div id="fade1"></div> 
+        <div id="fade2"></div> 
+        <img src="" id="img">
+    </div>
+
+    
+    <button id="button" onclick="openMainPage()">Sign Up</button>
+
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const url = urlParams.get('url');
+
+        document.getElementById("img").setAttribute("src", url)
+
+        function openMainPage() {
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = 0
+            setTimeout(function() {
+                window.location = "../"
+            }, 500)
+        }
+    </script>
+</body>
+</html>

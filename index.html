@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="images/Logo.jpg" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEMO</title>
+</head>
+<style>
+    @media (pointer:none), (pointer:coarse) {
+
+        body {
+            background:rgb(10, 10, 10);
+            padding:0;
+            margin:0px;
+            font-family: Arial, Helvetica, sans-serif;
+            width:100vw;
+            overflow: hidden;
+            opacity: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: .5s;
+        }
+
+        #logo {
+            color:white;
+            position:fixed;
+            top:205px;
+            left:50%;
+            transform:translate(-50%);
+            font-size: 45px;
+            font-weight: 900;
+        }
+
+        #log-In {
+            width:calc(100vw - 50px);
+            padding:15px 0px;
+            font-size: 20px;
+            font-weight: 700;
+            color:black;
+            border-radius: 15px;
+            border:none;
+            margin-top: 15px;
+            background:white;
+            text-transform: uppercase;
+            position:fixed;
+            bottom:85px;
+            left:50%;
+            transform: translate(-50%);
+        }
+
+        #sign-Up {
+            width:calc(100vw - 50px);
+            padding:15px 0px;
+            font-size: 20px;
+            font-weight: 700;
+            color:rgb(255, 255, 255);
+            border-radius: 15px;
+            border:none;
+            margin-top: 15px;
+            background:transparent;
+            text-transform: uppercase;
+            position:fixed;
+            bottom:20px;
+            left:50%;
+            transform: translate(-50%);
+        }
+        
+        html {
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .blur {
+            filter:blur(1.5rem);
+            max-width: 250px;
+            max-height: 250px;
+        }
+
+        #o {
+            position:absolute;
+            width:75px;
+            top:200px;
+            left:75%;
+            transform:rotate(20deg) translate(-75%);
+            filter:brightness(90%) blur(2.5rem);
+        }
+
+        #t {
+            position:absolute;
+            width:75px;
+            top:265px;
+            left:50%;
+            transform:rotate(20deg) translate(-50%);
+            filter:brightness(50%) blur(2.5rem);
+        }
+
+        #T {
+            position:absolute;
+            width:75px;
+            top:200px;
+            left:25%;
+            transform:rotate(20deg) translate(-25%);
+            filter:brightness(100%) blur(2.5rem);
+        }
+
+        #f {
+            position:absolute;
+            width:75px;
+            top:175px;
+            left:50%;
+            transform:rotate(20deg) translate(-50%);
+            filter:brightness(50%) blur(2.5rem);
+        }
+
+        input:focus {
+            outline:none;
+        }
+    }
+</style>
+<body onload="showBody()">
+    <div id="logo-Container">
+        <img src="images/Five.jpg" id="o" class="blur">    
+        <img src="images/cody_img.png" id="t" class="blur">    
+        <img src="images/toronto_img.png" id="T" class="blur">    
+        <img src="images/group.jpg" id="f" class="blur">    
+        <div id="logo">MEMO</div>
+    </div>
+    <button id="log-In" onclick="openSignIn()">Log In</button>
+    <button id="sign-Up" onclick="openSignUp()">Sign Up</button>
+
+    <script>
+        function showBody() {
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = "1"
+        }
+
+        function openSignIn() {
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = "0"
+            setTimeout(function() {
+                window.location = "/memo/signin"
+            }, 500)
+        }
+
+        function openSignUp() {
+            document.querySelector("body").style.transition = ".5s"
+            document.querySelector("body").style.opacity = "0"
+            setTimeout(function() {
+                window.location = "/memo/signup"
+            }, 500)
+        }
+    </script>
+</body>
+</html>

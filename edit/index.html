@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="../images/Logo.jpg" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-storage.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script> 
+    <script defer src="script.js"></script>
+    <title>MEMO / EDIT</title>
+</head>
+<style>
+    @media (pointer:none), (pointer:coarse) {
+        :root {
+            --Image-height:600px;
+        }
+
+        body {
+            background:rgb(10, 10, 10);
+            padding:0;
+            margin:0px;
+            font-family: Arial, Helvetica, sans-serif;
+            height:100px;
+            width:100vw;
+            opacity: 0;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #img-Container {
+            width:100vw;
+            height:var(--Image-height);
+            position:fixed;
+            top:0px;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #img {
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            user-select: none;
+            filter:blur(2.5rem) brightness(30%);
+            transition: .5s;
+        }
+
+        #profile-Container {
+            width:125px;
+            height:125px;
+            position:absolute;
+            overflow: hidden;
+            border-radius: 100%;
+            top:calc((200px / 2) - (125px / 2));
+            left:50%;
+            z-index:100;
+            transform:translate(-50%);
+        }
+
+        #profile-Img {
+            width:100%;
+            height:100%;
+            object-fit: cover;
+            filter: brightness(60%);
+            transition: .5s;
+        }
+
+        #name {
+            width:calc(100vw - 50px);
+            position:absolute;
+            text-transform: capitalize;
+            top:calc(((200px / 2) - (125px / 2)) + 125px);
+            left:50%;
+            transform:translate(-50%);
+            text-align: center;
+            color:white;
+            z-index:100;
+            height:fit-content;
+            font-size:40px;
+            font-weight:900;
+        }
+        
+        #username {
+            color:rgb(150, 150, 150);
+            font-weight:900;
+            width:calc(100vw - 50px);
+            position:absolute;
+            top:calc(((200px / 2) - (125px / 2)) + 175px);
+            left:50%;
+            transform:translate(-50%);
+            text-align: center;
+            z-index:100;
+            height:fit-content;
+            text-transform: lowercase;
+        }
+
+        #bio-Container {
+            position:absolute;
+            top:250px;
+            font-size: 20px;
+            height:100px;
+            left:50%;
+            transform:translate(-50%);
+            width:calc(100vw - 80px);
+            z-index:101;
+            border-radius: 15px;
+            border:2px solid rgba(70, 70, 70, 0.5);
+            padding: 15px;
+            resize: none;
+            background:rgba(10, 10, 10, 0.5);
+            backdrop-filter: blur(1rem);
+            color:white;
+        }
+
+        #max-Length-Text {
+            position:absolute;
+            top:390px;
+            left:25px;
+            color:rgb(200, 200, 200);
+            z-index: 200;
+            font-weight: 700;
+        }
+
+        #fade {
+            width:100vw;
+            height:50%;
+            background:linear-gradient(to top, rgb(10, 10, 10), transparent);
+            position:absolute;
+            top:calc(var(--Image-height) - 50%);
+            user-select: none;
+            z-index: 2;
+        }
+
+        #fade2 {
+            width:100vw;
+            height:50%;
+            background:linear-gradient(to top, rgb(10, 10, 10), transparent);
+            position:absolute;
+            top:calc(var(--Image-height) - 50%);
+            user-select: none;
+            z-index: 2;
+        }
+
+        #fade3 {
+            width:100vw;
+            height:50%;
+            background:linear-gradient(to bottom, rgb(10, 10, 10), transparent);
+            position:fixed;
+            top:0px;
+            user-select: none;
+            z-index:1;
+        }
+
+        #fade4 {
+            width:100vw;
+            height:50%;
+            background:linear-gradient(to bottom, rgba(10, 10, 10, 0.438), transparent);
+            position:fixed;
+            top:0px;
+            user-select: none;
+            z-index:1;
+        }
+
+        #main-Top-Fade {
+            width:100vw;
+            height:25%;
+            background:linear-gradient(to bottom, rgb(10, 10, 10), transparent);
+            position:fixed;
+            top:0px;
+            user-select: none;
+            z-index:13;
+        }
+
+        #posts-Container {
+            width:calc(100vw - 50px);
+            height:20px;
+            background:rgb(10, 10, 10);
+            position:absolute;
+            top:calc(var(--Image-height));
+            position:absolute;
+            padding:25px;
+            margin-top: -25px;
+            border-radius: 15px;
+        }
+
+        #bottom-Confirm-Back {
+            width:100vw;
+            height:25vh;
+            background:linear-gradient(to top, rgb(10, 10, 10), transparent);
+            position:fixed;
+            bottom:0px;
+            z-index: 200;
+        }
+
+        button {
+            padding:15px 0px;
+            font-size: 20px;
+            font-weight: 700;
+            color:black;
+            border-radius: 15px;
+            border:none;
+            margin-top: 15px;
+            background:white;
+            text-transform: uppercase;
+        }
+
+        #update-Button {
+            width:calc(100vw - 50px);
+            position:absolute;
+            bottom:65px;
+            left:50%;
+            transform:translate(-50%);
+            opacity: 0.5;
+            transition: .5s;
+        }
+
+        #cancel-Button {
+            width:calc(100vw - 50px);
+            position:absolute;
+            bottom:5px;
+            left:50%;
+            transform:translate(-50%);
+            color:rgb(100, 100, 100);
+            background:transparent;
+        }
+
+        input, textarea:focus {
+            outline:none;
+        }
+
+        .camera-Icon {
+            width:50px;
+            height:50px;
+            fill:white;
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+            opacity: 0.5;
+        }
+
+        #Images {
+            width:100%;
+            height:100%;
+            font-size: 100px;
+            position:absolute;
+            top:0px;
+            left:0px;
+            opacity:0;
+            z-index: 1000;
+        }
+    }
+</style>
+<body>
+    <div id="img-Container">
+        <img src="" id="img">
+    </div>
+    <div id="fade"></div>
+    <div id="fade2"></div>
+    <div id="fade3"></div>
+    <div id="fade4"></div>
+    <div id="name"></div>
+    <div id="username">@shara14</div>
+    <!-- <textarea id="bio-Container" placeholder="Bio" maxlength="50"></textarea>
+    <div id="max-Length-Text">Max Length: 50</div> -->
+    
+    <div id="profile-Container">        
+        <img src="" id="profile-Img">
+        <svg class="camera-Icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" viewBox="0 0 487 487" xml:space="preserve"><g><g><path d="M308.1,277.95c0,35.7-28.9,64.6-64.6,64.6s-64.6-28.9-64.6-64.6s28.9-64.6,64.6-64.6S308.1,242.25,308.1,277.95z     M440.3,116.05c25.8,0,46.7,20.9,46.7,46.7v122.4v103.8c0,27.5-22.3,49.8-49.8,49.8H49.8c-27.5,0-49.8-22.3-49.8-49.8v-103.9    v-122.3l0,0c0-25.8,20.9-46.7,46.7-46.7h93.4l4.4-18.6c6.7-28.8,32.4-49.2,62-49.2h74.1c29.6,0,55.3,20.4,62,49.2l4.3,18.6H440.3z     M97.4,183.45c0-12.9-10.5-23.4-23.4-23.4c-13,0-23.5,10.5-23.5,23.4s10.5,23.4,23.4,23.4C86.9,206.95,97.4,196.45,97.4,183.45z     M358.7,277.95c0-63.6-51.6-115.2-115.2-115.2s-115.2,51.6-115.2,115.2s51.6,115.2,115.2,115.2S358.7,341.55,358.7,277.95z"/></g></g></svg>
+        <input type="file" name="file" id="Images" title="Please upload image(Jepg, Png)" accept="image/*">
+    </div>
+    <div id="posts-Container">
+        
+    </div>
+
+    <div id="bottom-Confirm-Back">
+        <button id="update-Button" onclick="updateProfile()" disabled>Update</button>
+        <button id="cancel-Button" onclick="closeEditPage()">cancel</button>
+    </div>
+
+
+    <script>
+        document.addEventListener("scroll", function() {
+            if(window.scrollY <= 350) {
+                console.log()
+                document.getElementById("img").style.height = (100 - ((window.scrollY / 350) * 100)) + "%"
+            } else if(window.scrollY >= 350) {
+                document.getElementById("img").style.height = "0%"
+            }else if(window.scrollY >= 300) {
+                
+                document.getElementById("main-Top-Fade").style.opacity = 1
+            } else if(window.scrollY <= 0) {
+                document.getElementById("img").style.height = "100%"
+            }
+        })
+    </script>
+</body>
+</html>
